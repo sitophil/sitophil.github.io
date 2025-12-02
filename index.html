@@ -3,17 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cytofil | سایتوفیل</title>
     
+    <title>سایتوفیل | طراحی سایت و توسعه وب حرفه‌ای | Sitophil</title>
+    <meta name="description" content="سایتوفیل (Sitophil) ارائه دهنده خدمات طراحی سایت مدرن، برنامه نویسی اختصاصی و سئو با استانداردهای جهانی. طراحی خاص برای برندهای خاص.">
+    <meta name="keywords" content="طراحی سایت, برنامه نویسی وب, سئو, سایتوفیل, Sitophil, طراحی سایت هکری, توسعه وب">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sitophil.com">
+    <meta property="og:title" content="سایتوفیل | آینده وب">
+    <meta property="og:description" content="طراحی وبسایت‌های استاتیک و داینامیک با جلوه‌های ویژه سه بعدی.">
+    <meta property="og:type" content="website">
+
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-color: #050505;
+            --bg-color: #020202;
             --terminal-green: #00ff41;
+            --accent-green: #0aff5d;
             --dim-green: #003300;
-            --text-dim: #1a1a1a;
+            --text-color: #e0e0e0;
         }
 
         * {
@@ -24,26 +34,19 @@
 
         body {
             background-color: var(--bg-color);
-            color: var(--terminal-green);
+            color: var(--text-color);
             font-family: 'Vazirmatn', sans-serif;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--dim-green);
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--terminal-green);
-        }
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--dim-green); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--terminal-green); }
 
-        /* 3D Canvas Background */
+        /* --- Background Effects --- */
         #canvas-container {
             position: fixed;
             top: 0;
@@ -51,30 +54,25 @@
             width: 100%;
             height: 100vh;
             z-index: -1;
-            opacity: 0.6;
-            pointer-events: none;
+            opacity: 0.4; /* Slightly dimmer to make text pop */
         }
 
-        /* Overlay Scanlines */
-        .scanlines {
+        .matrix-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
-            background-size: 100% 4px;
-            z-index: 100;
+            background: radial-gradient(circle, transparent 60%, #000 150%);
+            z-index: -1;
             pointer-events: none;
         }
 
-        /* Header / Hero */
+        /* --- Typography Helpers --- */
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .green-glow { text-shadow: 0 0 10px var(--terminal-green); color: var(--terminal-green); }
+        
+        /* --- Header / Hero --- */
         header {
             height: 100vh;
             display: flex;
@@ -83,125 +81,289 @@
             align-items: center;
             text-align: center;
             position: relative;
+            z-index: 10;
         }
 
         h1 {
-            font-family: 'Share Tech Mono', 'Vazirmatn', monospace;
-            font-size: 5rem;
+            font-size: clamp(3rem, 10vw, 6rem);
             text-transform: uppercase;
             letter-spacing: 5px;
-            text-shadow: 0 0 10px var(--terminal-green);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        h1::after {
+            content: '_';
+            animation: blink 1s infinite;
         }
 
         .subtitle {
-            font-size: 1.5rem;
-            color: #fff;
-            opacity: 0.8;
-            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            color: #888;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .scroll-indicator {
             position: absolute;
-            bottom: 50px;
-            animation: blink 1.5s infinite;
+            bottom: 30px;
+            font-size: 0.9rem;
+            color: var(--terminal-green);
+            opacity: 0.7;
+            animation: bounce 2s infinite;
         }
 
-        /* The Pinned Section (GSAP Magic) */
+        /* --- Pinned Text Reveal Section --- */
         .pinned-section {
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* background: rgba(5, 5, 5, 0.8); */
+            position: relative;
         }
 
         .reveal-text-container {
-            width: 80%;
-            max-width: 900px;
-            font-size: 2.5rem;
-            line-height: 1.6;
-            font-weight: 700;
-            text-align: center; /* Center align for better flow */
+            width: 90%;
+            max-width: 1000px;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.8;
+            perspective: 1000px; /* For 3D text effect */
         }
 
-        /* Words start distinct but dim */
         .word {
             display: inline-block;
-            color: #333; /* Dark/Hidden color */
-            transition: color 0.1s;
-            margin: 0 5px;
+            margin: 0 6px;
+            opacity: 0; /* Hidden initially */
+            transform: translateY(30px) scale(0.8); /* Moved down and smaller */
+            filter: blur(10px); /* Blurred */
+            /* Transition handled by GSAP */
         }
 
-        /* Active class added by GSAP */
         .word.active {
+            /* This class is conceptually what GSAP animates to */
             color: var(--terminal-green);
-            text-shadow: 0 0 5px var(--terminal-green);
+            text-shadow: 0 0 15px var(--terminal-green);
         }
 
-        /* Footer */
-        footer {
-            height: 50vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            border-top: 1px solid var(--dim-green);
-            background: #000;
+        /* --- Services Section (SEO Rich) --- */
+        .services-section {
+            padding: 100px 20px;
+            background: linear-gradient(to bottom, transparent, rgba(0,20,0,0.5));
             position: relative;
             z-index: 2;
         }
 
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--terminal-green);
+            border-bottom: 1px solid var(--dim-green);
+            display: inline-block;
+            padding-bottom: 10px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--dim-green);
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--terminal-green);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .card i {
+            font-size: 2.5rem;
+            color: var(--terminal-green);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .card p {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        /* --- Why Us Section --- */
+        .why-us {
+            padding: 100px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+
+        .stat-item {
+            margin: 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            color: var(--terminal-green);
+            font-family: 'Share Tech Mono', monospace;
+            display: block;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #000;
+            border-top: 1px solid var(--dim-green);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        .cta-box {
+            margin-bottom: 40px;
+        }
+
         .cta-btn {
-            border: 1px solid var(--terminal-green);
-            padding: 15px 40px;
+            display: inline-block;
+            border: 2px solid var(--terminal-green);
+            padding: 15px 50px;
+            font-size: 1.2rem;
             color: var(--terminal-green);
             text-decoration: none;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: var(--terminal-green);
+            transition: 0.3s;
+            z-index: -1;
+        }
+
+        .cta-btn:hover::before {
+            left: 0;
         }
 
         .cta-btn:hover {
-            background: var(--terminal-green);
             color: #000;
-            box-shadow: 0 0 20px var(--terminal-green);
+            box-shadow: 0 0 30px var(--terminal-green);
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        .copy {
+            color: #444;
+            font-size: 0.8rem;
+            margin-top: 20px;
         }
 
-        /* Mobile Adjustments */
-        @media (max-width: 768px) {
-            h1 { font-size: 3rem; }
-            .reveal-text-container { font-size: 1.5rem; }
-        }
+        /* --- Animations --- */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+
     </style>
 </head>
 <body>
 
-    <div class="scanlines"></div>
-
+    <div class="matrix-overlay"></div>
     <div id="canvas-container"></div>
 
-    <header>
-        <h1>CYTOFIL</h1>
-        <div class="subtitle">&lt; Web Design & Development /&gt;</div>
-        <div class="scroll-indicator">SCROLL DOWN_</div>
-    </header>
+    <main>
+        <header>
+            <h1 class="tech-font green-glow">SITOPHIL</h1>
+            <p class="subtitle">معماری دیجیتال | سئو | توسعه وب</p>
+            <div class="scroll-indicator tech-font">INITIALIZING SYSTEM... SCROLL DOWN</div>
+        </header>
 
-    <section class="pinned-section">
-        <div class="reveal-text-container" id="text-reveal">
-            در دنیای صفر و یک‌ها، ما رویاهای شما را کامپایل می‌کنیم. سایتوفیل فقط یک کد نیست، معماریِ آینده‌ی دیجیتال شماست. جایی که خلاقیت با منطق ترکیب می‌شود تا تجربه‌ای بی‌نقص خلق کند.
-        </div>
-    </section>
+        <section class="pinned-section">
+            <div class="reveal-text-container" id="text-reveal">
+                در سایتوفیل، ما کدها را به هنر تبدیل می‌کنیم. وب‌سایت شما فقط یک آدرس اینترنتی نیست، بلکه هویت دیجیتال شماست. ما با استراتژی دقیق و طراحی جسورانه، شما را در صفحه اول گوگل و در ذهن مشتریانتان ماندگار می‌کنیم. سرعت بالا، امنیت مطلق و طراحی خیره‌کننده، استاندارد ماست.
+            </div>
+        </section>
+
+        <section class="services-section">
+            <h2 class="section-title tech-font">SYSTEM MODULES</h2>
+            <div class="grid-container">
+                <article class="card">
+                    <i class="fas fa-code"></i>
+                    <h3>توسعه اختصاصی وب</h3>
+                    <p>کدنویسی تمیز و بهینه (Clean Code) با جدیدترین تکنولوژی‌های روز دنیا برای سرعتی مافوق تصور.</p>
+                </article>
+                <article class="card">
+                    <i class="fas fa-search-dollar"></i>
+                    <h3>سئو تکنیکال (SEO)</h3>
+                    <p>بهینه‌سازی عمیق ساختار سایت برای موتورهای جستجو. ما زبان گوگل را بهتر از هر کسی می‌فهمیم.</p>
+                </article>
+                <article class="card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>طراحی ریسپانسیو</h3>
+                    <p>نمایش بی‌نقص در تمامی دیوایس‌ها. تجربه کاربری (UX) سیال و مدرن برای جذب حداکثری مخاطب.</p>
+                </article>
+                <article class="card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>امنیت سایبری</h3>
+                    <p>پیاده‌سازی پروتکل‌های امنیتی پیشرفته برای حفاظت از داده‌های ارزشمند شما و مشتریانتان.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="why-us">
+            <h2 class="section-title tech-font">DATA ANALYSIS</h2>
+            <p style="color: #bbb; margin-bottom: 30px;">چرا برندهای بزرگ به سایتوفیل اعتماد می‌کنند؟</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number count-up" data-target="100">0</span>%
+                    <span>رضایت مشتری</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number count-up" data-target="98">0</span>
+                    <span>پروژه موفق</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number count-up" data-target="24">0</span>/7
+                    <span>پشتیبانی</span>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <h2 style="margin-bottom: 2rem; font-family: 'Share Tech Mono';">READY TO DEPLOY?</h2>
-        <a href="#" class="cta-btn">CONTACT_ROOT</a>
+        <div class="cta-box">
+            <h2 style="margin-bottom: 2rem; color: #fff;">پروژه بعدی شما، شاهکار بعدی ماست.</h2>
+            <a href="#" class="cta-btn tech-font">START PROJECT_</a>
+        </div>
+        <div class="copy tech-font">
+            &copy; 2025 SITOPHIL. ALL RIGHTS RESERVED. <br> SYSTEM STATUS: ONLINE
+        </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -209,85 +371,97 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        // --- 1. Three.js Setup (The 3D Hacker Globe) ---
+        // --- 1. Enhanced Three.js Scene (Particle Torus Knot) ---
         const scene = new THREE.Scene();
+        // Fog for depth
+        scene.fog = new THREE.FogExp2(0x020202, 0.05);
+
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // Geometry: Icosahedron for that techy/low-poly look
-        const geometry = new THREE.IcosahedronGeometry(2, 1); // Radius, Detail
-        const material = new THREE.MeshBasicMaterial({ 
-            color: 0x00ff41, 
-            wireframe: true,
-            transparent: true,
-            opacity: 0.3
-        });
-        const sphere = new THREE.Mesh(geometry, material);
-        scene.add(sphere);
-
-        // Add some particles around
+        // Complex Geometry: Torus Knot
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        
+        // Convert to Particles
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 500;
-        const posArray = new Float32Array(particlesCount * 3);
-        for(let i = 0; i < particlesCount * 3; i++) {
-            posArray[i] = (Math.random() - 0.5) * 15;
+        const positions = new Float32Array(geometry.attributes.position.array.length * 3);
+        
+        // Add some randomness to particles for a "glitchy/cloud" look
+        const originalPos = geometry.attributes.position.array;
+        for(let i = 0; i < originalPos.length; i++) {
+             // Expand the shape a bit
+             positions[i] = originalPos[i] * 1.5 + (Math.random() - 0.5) * 0.5;
         }
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.02,
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(originalPos, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.08,
             color: 0x00ff41,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
         });
-        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+
+        const particlesMesh = new THREE.Points(particlesGeometry, material);
         scene.add(particlesMesh);
 
-        camera.position.z = 5;
+        camera.position.z = 35;
 
-        // Mouse interaction vars
+        // Animation Loop
         let mouseX = 0;
         let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
 
-        document.addEventListener('mousemove', (event) => {
-            mouseX = event.clientX / window.innerWidth - 0.5;
-            mouseY = event.clientY / window.innerHeight - 0.5;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
         });
+
+        const clock = new THREE.Clock();
 
         function animate() {
             requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
 
-            // Rotation
-            sphere.rotation.y += 0.002;
-            sphere.rotation.x += 0.001;
-            particlesMesh.rotation.y -= 0.001;
+            targetX = mouseX * 2;
+            targetY = mouseY * 2;
 
-            // Interactive Parallax
-            sphere.rotation.y += 0.05 * (mouseX - sphere.rotation.y * 0.05);
-            sphere.rotation.x += 0.05 * (mouseY - sphere.rotation.x * 0.05);
+            // Smooth rotation following mouse
+            particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
+            particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+
+            // Constant organic movement
+            particlesMesh.rotation.z += 0.002;
+            
+            // Pulse effect (scale)
+            const scale = 1 + Math.sin(elapsedTime * 2) * 0.05;
+            particlesMesh.scale.set(scale, scale, scale);
 
             renderer.render(scene, camera);
         }
         animate();
 
-        // Resize Handler
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-
-        // --- 2. GSAP ScrollTrigger (The Text Reveal) ---
+        // --- 2. Advanced GSAP Text Reveal ---
         gsap.registerPlugin(ScrollTrigger);
 
-        // Split text into words for animation
         const textContainer = document.getElementById('text-reveal');
-        const text = textContainer.innerText;
-        textContainer.innerHTML = ''; // Clear text
-        
-        // Wrap words in spans
-        const words = text.split(' ');
+        const rawText = textContainer.innerText;
+        textContainer.innerHTML = ''; 
+
+        // Split text
+        const words = rawText.split(' ');
         words.forEach(word => {
             const span = document.createElement('span');
             span.innerText = word + ' ';
@@ -297,25 +471,41 @@
 
         const wordElements = document.querySelectorAll('.word');
 
-        // Create the timeline
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: ".pinned-section",
-                start: "top top", // Start when section hits top
-                end: "+=200%", // Scroll distance (200% of viewport height)
-                scrub: 1, // Smooth scrubbing
-                pin: true, // Pin the container
-                // markers: true // Uncomment for debugging
+                start: "top top",
+                end: "+=300%", // Longer scroll for slower reading
+                scrub: 1,
+                pin: true,
             }
         });
 
-        // Animate words sequentially
+        // The "Cinematic" Reveal Animation
         tl.to(wordElements, {
-            color: "#00ff41", // Change to bright green
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            color: "#00ff41",
             textShadow: "0 0 10px #00ff41",
-            stagger: 0.1, // Time between each word lighting up
+            stagger: 0.2, // Smooth flow
             duration: 1,
-            ease: "none"
+            ease: "power2.out"
+        });
+
+        // --- 3. Number Counter Animation for 'Why Us' ---
+        gsap.utils.toArray('.count-up').forEach(el => {
+            gsap.to(el, {
+                innerText: el.getAttribute('data-target'),
+                duration: 2,
+                snap: { innerText: 1 },
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                }
+            });
         });
 
     </script>
