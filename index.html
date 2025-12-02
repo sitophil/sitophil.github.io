@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cytofil | سایتوفیل</title>
+    
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --terminal-green: #00ff41;
+            --dim-green: #003300;
+            --text-dim: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--terminal-green);
+            font-family: 'Vazirmatn', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--dim-green);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--terminal-green);
+        }
+
+        /* 3D Canvas Background */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Overlay Scanlines */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Header / Hero */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Share Tech Mono', 'Vazirmatn', monospace;
+            font-size: 5rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px var(--terminal-green);
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #fff;
+            opacity: 0.8;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
+            animation: blink 1.5s infinite;
+        }
+
+        /* The Pinned Section (GSAP Magic) */
+        .pinned-section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* background: rgba(5, 5, 5, 0.8); */
+        }
+
+        .reveal-text-container {
+            width: 80%;
+            max-width: 900px;
+            font-size: 2.5rem;
+            line-height: 1.6;
+            font-weight: 700;
+            text-align: center; /* Center align for better flow */
+        }
+
+        /* Words start distinct but dim */
+        .word {
+            display: inline-block;
+            color: #333; /* Dark/Hidden color */
+            transition: color 0.1s;
+            margin: 0 5px;
+        }
+
+        /* Active class added by GSAP */
+        .word.active {
+            color: var(--terminal-green);
+            text-shadow: 0 0 5px var(--terminal-green);
+        }
+
+        /* Footer */
+        footer {
+            height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-top: 1px solid var(--dim-green);
+            background: #000;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-btn {
+            border: 1px solid var(--terminal-green);
+            padding: 15px 40px;
+            color: var(--terminal-green);
+            text-decoration: none;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cta-btn:hover {
+            background: var(--terminal-green);
+            color: #000;
+            box-shadow: 0 0 20px var(--terminal-green);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .reveal-text-container { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div id="canvas-container"></div>
+
+    <header>
+        <h1>CYTOFIL</h1>
+        <div class="subtitle">&lt; Web Design & Development /&gt;</div>
+        <div class="scroll-indicator">SCROLL DOWN_</div>
+    </header>
+
+    <section class="pinned-section">
+        <div class="reveal-text-container" id="text-reveal">
+            در دنیای صفر و یک‌ها، ما رویاهای شما را کامپایل می‌کنیم. سایتوفیل فقط یک کد نیست، معماریِ آینده‌ی دیجیتال شماست. جایی که خلاقیت با منطق ترکیب می‌شود تا تجربه‌ای بی‌نقص خلق کند.
+        </div>
+    </section>
+
+    <footer>
+        <h2 style="margin-bottom: 2rem; font-family: 'Share Tech Mono';">READY TO DEPLOY?</h2>
+        <a href="#" class="cta-btn">CONTACT_ROOT</a>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // --- 1. Three.js Setup (The 3D Hacker Globe) ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Geometry: Icosahedron for that techy/low-poly look
+        const geometry = new THREE.IcosahedronGeometry(2, 1); // Radius, Detail
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0x00ff41, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        // Add some particles around
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 500;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0x00ff41,
+        });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        // Mouse interaction vars
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotation
+            sphere.rotation.y += 0.002;
+            sphere.rotation.x += 0.001;
+            particlesMesh.rotation.y -= 0.001;
+
+            // Interactive Parallax
+            sphere.rotation.y += 0.05 * (mouseX - sphere.rotation.y * 0.05);
+            sphere.rotation.x += 0.05 * (mouseY - sphere.rotation.x * 0.05);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+
+        // --- 2. GSAP ScrollTrigger (The Text Reveal) ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Split text into words for animation
+        const textContainer = document.getElementById('text-reveal');
+        const text = textContainer.innerText;
+        textContainer.innerHTML = ''; // Clear text
+        
+        // Wrap words in spans
+        const words = text.split(' ');
+        words.forEach(word => {
+            const span = document.createElement('span');
+            span.innerText = word + ' ';
+            span.classList.add('word');
+            textContainer.appendChild(span);
+        });
+
+        const wordElements = document.querySelectorAll('.word');
+
+        // Create the timeline
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".pinned-section",
+                start: "top top", // Start when section hits top
+                end: "+=200%", // Scroll distance (200% of viewport height)
+                scrub: 1, // Smooth scrubbing
+                pin: true, // Pin the container
+                // markers: true // Uncomment for debugging
+            }
+        });
+
+        // Animate words sequentially
+        tl.to(wordElements, {
+            color: "#00ff41", // Change to bright green
+            textShadow: "0 0 10px #00ff41",
+            stagger: 0.1, // Time between each word lighting up
+            duration: 1,
+            ease: "none"
+        });
+
+    </script>
+</body>
+</html>
