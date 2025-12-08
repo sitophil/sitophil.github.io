@@ -354,7 +354,7 @@
     <footer>
         <div class="cta-box">
             <h2 style="margin-bottom: 2rem; color: #fff;">پروژه بعدی شما، شاهکار بعدی ماست.</h2>
-            <a href="https://t.me/abolfazllx" class="cta-btn tech-font">START PROJECT_</a>
+            <a href="#" class="cta-btn tech-font" onclick="openTelegram(); return false;">START PROJECT_</a>
         </div>
         <div class="copy tech-font">
             &copy; 2025 SITOPHIL. ALL RIGHTS RESERVED. <br> SYSTEM STATUS: ONLINE
@@ -504,5 +504,28 @@
         });
 
     </script>
+    <script>
+function openTelegram() {
+    // لینک مستقیم (اولویت‌دار)
+    const tgLink = "tg://resolve?domain=abolfazllx";
+
+    // لینک fallback (در صورت نبود تلگرام)
+    const webLink = "https://t.me/abolfazllx";
+
+    // تلاش برای باز کردن تلگرام
+    const timeout = setTimeout(function () {
+        // اگر تلگرام باز نشد، می‌رود روی نسخه وب
+        window.location.href = webLink;
+    }, 500); // نیم ثانیه کافی است
+
+    // تلاش برای باز کردن تلگرام
+    window.location.href = tgLink;
+
+    // اگر موفق شد، زمان‌سنج پاک می‌شود
+    window.onblur = function () {
+        clearTimeout(timeout);
+    };
+}
+</script>
 </body>
 </html>
