@@ -54,7 +54,7 @@
             width: 100%;
             height: 100vh;
             z-index: -1;
-            opacity: 0.4; /* Slightly dimmer to make text pop */
+            opacity: 0.7; /* Enhanced visibility */
         }
 
         .matrix-overlay {
@@ -294,6 +294,89 @@
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
+        /* --- Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #050505;
+            margin: 10% auto;
+            padding: 30px;
+            border: 1px solid var(--terminal-green);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 0 20px var(--dim-green);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            color: var(--terminal-green);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label, .captcha-container label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--terminal-green);
+        }
+
+        .form-group input, .captcha-container input {
+            width: 100%;
+            padding: 10px;
+            background: #111;
+            border: 1px solid var(--dim-green);
+            color: var(--terminal-green);
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .captcha-container input:focus {
+            outline: none;
+            border-color: var(--terminal-green);
+            box-shadow: 0 0 5px var(--terminal-green);
+        }
+
+        .captcha-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px dashed var(--dim-green);
+        }
+
+        #formStatus {
+            margin-top: 15px;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -305,6 +388,7 @@
         <header>
             <h1 class="tech-font green-glow">SITOPHIL</h1>
             <p class="subtitle">معماری دیجیتال | سئو | توسعه وب</p>
+            <a href="javascript:void(0)" id="openContact" class="cta-btn tech-font" style="margin-top: 2rem;">تماس با ما</a>
             <div class="scroll-indicator tech-font">INITIALIZING SYSTEM... SCROLL DOWN</div>
         </header>
 
@@ -399,10 +483,10 @@
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(originalPos, 3));
 
         const material = new THREE.PointsMaterial({
-            size: 0.08,
+            size: 0.12,
             color: 0x00ff41,
             transparent: true,
-            opacity: 0.8,
+            opacity: 1.0,
             blending: THREE.AdditiveBlending
         });
 
@@ -508,7 +592,113 @@
         });
 
     </script>
+    <div id="contactModal" class="modal">
+        <div class="modal-content tech-font">
+            <span class="close-modal">&times;</span>
+            <h2 class="green-glow" style="margin-bottom: 20px;">SYSTEM_CONTACT_FORM</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name">نام (NAME):</label>
+                    <input type="text" id="name" name="name" required placeholder="نام خود را وارد کنید">
+                </div>
+                <div class="form-group">
+                    <label for="phone">شماره تماس (PHONE):</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="۰۹۱۲۳۴۵۶۷۸۹">
+                </div>
+                <div class="form-group">
+                    <label for="work">حوزه کاری (FIELD):</label>
+                    <input type="text" id="work" name="work" required placeholder="مثلا: طراحی سایت فروشگاهی">
+                </div>
+                <div class="captcha-container">
+                    <label id="captchaQuestion" for="captchaInput"></label>
+                    <input type="text" id="captchaInput" required placeholder="پاسخ را اینجا بنویسید">
+                </div>
+                <button type="submit" class="cta-btn" style="width: 100%;">SEND_MESSAGE</button>
+            </form>
+            <div id="formStatus"></div>
+        </div>
+    </div>
+
     <script>
+        // --- 4. Modal & Form Logic ---
+        const modal = document.getElementById('contactModal');
+        const openBtn = document.getElementById('openContact');
+        const closeBtn = document.querySelector('.close-modal');
+        const contactForm = document.getElementById('contactForm');
+        const formStatus = document.getElementById('formStatus');
+        const captchaQuestion = document.getElementById('captchaQuestion');
+        const captchaInput = document.getElementById('captchaInput');
+
+        const captchaQuestions = [
+            { q: "آیا شما یک ربات هستید که قصد تسخیر جهان را دارد؟ (بله/خیر)", a: "خیر" },
+            { q: "حاصل ۲ + ۲ چند می‌شود؟ (به حروف بنویسید)", a: "چهار" },
+            { q: "برای عبور از فایروال، نام سایت را به حروف بزرگ تایپ کنید", a: "SITOPHIL" },
+            { q: "کدام خوشمزه‌تر است؟ (پیتزا / کابل شبکه)", a: "پیتزا" }
+        ];
+
+        let currentCaptcha;
+
+        function generateCaptcha() {
+            currentCaptcha = captchaQuestions[Math.floor(Math.random() * captchaQuestions.length)];
+            captchaQuestion.innerText = currentCaptcha.q;
+            captchaInput.value = '';
+        }
+
+        openBtn.onclick = () => {
+            modal.classList.add('show');
+            generateCaptcha();
+        };
+
+        closeBtn.onclick = () => {
+            modal.classList.remove('show');
+        };
+
+        window.onclick = (event) => {
+            if (event.target == modal) {
+                modal.classList.remove('show');
+            }
+        };
+
+        contactForm.onsubmit = async (e) => {
+            e.preventDefault();
+
+            if (captchaInput.value.trim() !== currentCaptcha.a) {
+                formStatus.innerText = "خطا: پاسخ امنیتی اشتباه است. شما مشکوک به ربات بودن هستید!";
+                formStatus.style.color = "red";
+                generateCaptcha();
+                return;
+            }
+
+            formStatus.innerText = "در حال ارسال پیام به سرور مرکزی...";
+            formStatus.style.color = "var(--terminal-green)";
+
+            const formData = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                work: document.getElementById('work').value
+            };
+
+            try {
+                // جایگزین کردن با آدرس ورکر کاربر
+                const response = await fetch('YOUR_CLOUDFLARE_WORKER_URL', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    formStatus.innerText = "پیام شما با موفقیت در شبکه ثبت شد. بزودی تماس می‌گیریم.";
+                    contactForm.reset();
+                    setTimeout(() => modal.classList.remove('show'), 3000);
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                formStatus.innerText = "خطا در برقراری ارتباط با فایروال. دوباره تلاش کنید.";
+                formStatus.style.color = "red";
+            }
+        };
+
 function openTelegram() {
     // لینک مستقیم (اولویت‌دار)
     const tgLink = "tg://resolve?domain=abolfazllx";
