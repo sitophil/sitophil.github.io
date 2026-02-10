@@ -607,4 +607,99 @@
                 </div>
                 <div class="form-group">
                     <label for="work">حوزه کاری (FIELD):</label>
-                    <input type="t
+                    <input type="text" id="work" name="work" required placeholder="مثلاً: طراحی سایت">
+                </div>
+                <div class="captcha-container">
+                    <label id="captchaQuestion">PROVE_YOU_ARE_HUMAN: 2 + 2 = ?</label>
+                    <input type="text" id="captchaAnswer" required placeholder="پاسخ را اینجا بنویسید">
+                </div>
+                <button type="submit" class="cta-btn tech-font" style="width: 100%; background: transparent; cursor: pointer; border: 1px solid var(--terminal-green); padding: 10px; color: var(--terminal-green);">SEND_MESSAGE</button>
+                <div id="formStatus"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal Logic
+        const modal = document.getElementById("contactModal");
+        const btn = document.getElementById("openContact");
+        const span = document.getElementsByClassName("close-modal")[0];
+
+        btn.onclick = function() {
+            modal.classList.add("show");
+        }
+
+        span.onclick = function() {
+            modal.classList.remove("show");
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.classList.remove("show");
+            }
+        }
+
+        // Funny Captcha Logic
+        const captchas = [
+            { q: "2 + 2 = ? (Hint: Not 5)", a: "4" },
+            { q: "What is 1 + 1 in binary?", a: "10" },
+            { q: "Type 'SITOPHIL' in CAPS", a: "SITOPHIL" },
+            { q: "The answer to Life, the Universe, and Everything?", a: "42" }
+        ];
+        let currentCaptcha = captchas[Math.floor(Math.random() * captchas.length)];
+        document.getElementById("captchaQuestion").innerText = "PROVE_YOU_ARE_HUMAN: " + currentCaptcha.q;
+
+        // Form Submission
+        const contactForm = document.getElementById("contactForm");
+        const formStatus = document.getElementById("formStatus");
+
+        contactForm.onsubmit = async function(e) {
+            e.preventDefault();
+            const userAnswer = document.getElementById("captchaAnswer").value.trim();
+
+            if (userAnswer.toLowerCase() !== currentCaptcha.a.toLowerCase()) {
+                formStatus.style.color = "#ff0000";
+                formStatus.innerText = "CAPTCHA_FAILED: Are you a bot? 🤖";
+                return;
+            }
+
+            formStatus.style.color = "var(--terminal-green)";
+            formStatus.innerText = "SENDING_DATA...";
+
+            const formData = {
+                name: document.getElementById("name").value,
+                phone: document.getElementById("phone").value,
+                work: document.getElementById("work").value
+            };
+
+            try {
+                // The URL will be configured by the user in the Worker setup
+                const workerUrl = 'YOUR_CLOUDFLARE_WORKER_URL';
+
+                const response = await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    formStatus.innerText = "MESSAGE_SENT_SUCCESSFULLY! 🚀";
+                    contactForm.reset();
+                    setTimeout(() => {
+                        modal.classList.remove("show");
+                        formStatus.innerText = "";
+                        // Reset captcha
+                        currentCaptcha = captchas[Math.floor(Math.random() * captchas.length)];
+                        document.getElementById("captchaQuestion").innerText = "PROVE_YOU_ARE_HUMAN: " + currentCaptcha.q;
+                    }, 2000);
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                formStatus.style.color = "#ff0000";
+                formStatus.innerText = "ERROR: Worker not configured or connection failed.";
+            }
+        };
+    </script>
+</body>
+</html>
