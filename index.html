@@ -388,7 +388,7 @@
         <header>
             <h1 class="tech-font green-glow">SITOPHIL</h1>
             <p class="subtitle">معماری دیجیتال | سئو | توسعه وب</p>
-            <a href="javascript:void(0)" id="openContact" class="cta-btn tech-font" style="margin-top: 2rem;">تماس با ما</a>
+            <a href="javascript:void(0)" id="openContact" class="cta-btn tech-font" style="margin-top: 1.5rem; padding: 10px 30px; font-size: 1rem;">تماس با ما</a>
             <div class="scroll-indicator tech-font">INITIALIZING SYSTEM... SCROLL DOWN</div>
         </header>
 
@@ -669,6 +669,13 @@
                 return;
             }
 
+            const workerUrl = 'YOUR_CLOUDFLARE_WORKER_URL';
+            if (workerUrl === 'YOUR_CLOUDFLARE_WORKER_URL') {
+                formStatus.innerText = "خطا: لطفاً ابتدا آدرس ورکر خود را در کد تنظیم کنید (راهنمای فایل CLOUDFLARE_WORKER_SETUP.md را بخوانید).";
+                formStatus.style.color = "orange";
+                return;
+            }
+
             formStatus.innerText = "در حال ارسال پیام به سرور مرکزی...";
             formStatus.style.color = "var(--terminal-green)";
 
@@ -679,8 +686,7 @@
             };
 
             try {
-                // جایگزین کردن با آدرس ورکر کاربر
-                const response = await fetch('YOUR_CLOUDFLARE_WORKER_URL', {
+                const response = await fetch(workerUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
@@ -691,10 +697,12 @@
                     contactForm.reset();
                     setTimeout(() => modal.classList.remove('show'), 3000);
                 } else {
-                    throw new Error();
+                    const errorText = await response.text();
+                    throw new Error(errorText || "Server responded with an error");
                 }
             } catch (err) {
-                formStatus.innerText = "خطا در برقراری ارتباط با فایروال. دوباره تلاش کنید.";
+                console.error("Submission Error:", err);
+                formStatus.innerText = "خطا در برقراری ارتباط با فایروال. مطمئن شوید ورکر به درستی تنظیم شده است.";
                 formStatus.style.color = "red";
             }
         };
