@@ -388,7 +388,7 @@
         <header>
             <h1 class="tech-font green-glow">SITOPHIL</h1>
             <p class="subtitle">معماری دیجیتال | سئو | توسعه وب</p>
-            <a href="javascript:void(0)" id="openContact" class="cta-btn tech-font" style="margin-top: 1.5rem; padding: 10px 30px; font-size: 1rem;">تماس با ما</a>
+            <a href="javascript:void(0)" onclick="openContactForm()" class="cta-btn tech-font" style="margin-top: 1.5rem; padding: 10px 30px; font-size: 1rem;">تماس با ما</a>
             <div class="scroll-indicator tech-font">INITIALIZING SYSTEM... SCROLL DOWN</div>
         </header>
 
@@ -442,7 +442,7 @@
     <footer>
         <div class="cta-box">
             <h2 style="margin-bottom: 2rem; color: #fff;">پروژه بعدی شما، شاهکار بعدی ماست.</h2>
-            <a href="#" class="cta-btn tech-font" onclick="openTelegram(); return false;">START PROJECT_</a>
+            <a href="javascript:void(0)" class="cta-btn tech-font" onclick="openContactForm()">START PROJECT_</a>
         </div>
         <div class="copy tech-font">
             &copy; 2025 SITOPHIL. ALL RIGHTS RESERVED. <br> SYSTEM STATUS: ONLINE
@@ -622,10 +622,9 @@
     <script>
         // Modal Logic
         const modal = document.getElementById("contactModal");
-        const btn = document.getElementById("openContact");
         const span = document.getElementsByClassName("close-modal")[0];
 
-        btn.onclick = function() {
+        function openContactForm() {
             modal.classList.add("show");
         }
 
@@ -676,13 +675,22 @@
                 // The URL will be configured by the user in the Worker setup
                 const workerUrl = 'YOUR_CLOUDFLARE_WORKER_URL';
 
+                if (workerUrl.includes('YOUR_CLOUDFLARE_WORKER_URL')) {
+                    formStatus.style.color = "#ffaa00";
+                    formStatus.innerText = "WARNING: Cloudflare Worker URL not set in index.html";
+                    console.warn("Please set your Cloudflare Worker URL in the script section of index.html");
+                    return;
+                }
+
                 const response = await fetch(workerUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
 
-                if (response.ok) {
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     formStatus.innerText = "MESSAGE_SENT_SUCCESSFULLY! 🚀";
                     contactForm.reset();
                     setTimeout(() => {
@@ -693,11 +701,11 @@
                         document.getElementById("captchaQuestion").innerText = "PROVE_YOU_ARE_HUMAN: " + currentCaptcha.q;
                     }, 2000);
                 } else {
-                    throw new Error();
+                    throw new Error(result.error || "Server Error");
                 }
             } catch (err) {
                 formStatus.style.color = "#ff0000";
-                formStatus.innerText = "ERROR: Worker not configured or connection failed.";
+                formStatus.innerText = "ERROR: " + err.message;
             }
         };
     </script>
