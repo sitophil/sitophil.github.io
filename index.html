@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>سایتوفیل | طراحی سایت و توسعه وب حرفه‌ای | Sitophil</title>
     <meta name="description" content="سایتوفیل (Sitophil) ارائه دهنده خدمات طراحی سایت مدرن، برنامه نویسی اختصاصی و سئو با استانداردهای جهانی. طراحی خاص برای برندهای خاص.">
     <meta name="keywords" content="طراحی سایت, برنامه نویسی وب, سئو, سایتوفیل, Sitophil, طراحی سایت هکری, توسعه وب">
@@ -71,7 +71,7 @@
         /* --- Typography Helpers --- */
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .green-glow { text-shadow: 0 0 10px var(--terminal-green); color: var(--terminal-green); }
-        
+
         /* --- Header / Hero --- */
         header {
             height: 100vh;
@@ -388,7 +388,7 @@
         <header>
             <h1 class="tech-font green-glow">SITOPHIL</h1>
             <p class="subtitle">معماری دیجیتال | سئو | توسعه وب</p>
-            <a href="javascript:void(0)" id="openContact" class="cta-btn tech-font" style="margin-top: 2rem;">تماس با ما</a>
+            <a href="javascript:void(0)" id="openContact" class="cta-btn tech-font" style="margin-top: 1.5rem; padding: 10px 30px; font-size: 1rem;">تماس با ما</a>
             <div class="scroll-indicator tech-font">INITIALIZING SYSTEM... SCROLL DOWN</div>
         </header>
 
@@ -399,7 +399,7 @@
         </section>
 
         <section class="services-section">
-           
+
             <div class="grid-container">
                 <article class="card">
                     <i class="fas fa-code"></i>
@@ -411,7 +411,7 @@
                     <h3>سئو تکنیکال (SEO)</h3>
                     <p>بهینه‌سازی عمیق ساختار سایت برای موتورهای جستجو. ما زبان گوگل را بهتر از هر کسی می‌فهمیم.</p>
                 </article>
-                
+
                 <article class="card">
                     <i class="fas fa-shield-alt"></i>
                     <h3>امنیت سایبری</h3>
@@ -461,25 +461,25 @@
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        
+
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         // Complex Geometry: Torus Knot
         const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
-        
+
         // Convert to Particles
         const particlesGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(geometry.attributes.position.array.length * 3);
-        
+
         // Add some randomness to particles for a "glitchy/cloud" look
         const originalPos = geometry.attributes.position.array;
         for(let i = 0; i < originalPos.length; i++) {
              // Expand the shape a bit
              positions[i] = originalPos[i] * 1.5 + (Math.random() - 0.5) * 0.5;
         }
-        
+
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(originalPos, 3));
 
         const material = new THREE.PointsMaterial({
@@ -521,7 +521,7 @@
 
             // Constant organic movement
             particlesMesh.rotation.z += 0.002;
-            
+
             // Pulse effect (scale)
             const scale = 1 + Math.sin(elapsedTime * 2) * 0.05;
             particlesMesh.scale.set(scale, scale, scale);
@@ -607,119 +607,4 @@
                 </div>
                 <div class="form-group">
                     <label for="work">حوزه کاری (FIELD):</label>
-                    <input type="text" id="work" name="work" required placeholder="مثلا: طراحی سایت فروشگاهی">
-                </div>
-                <div class="captcha-container">
-                    <label id="captchaQuestion" for="captchaInput"></label>
-                    <input type="text" id="captchaInput" required placeholder="پاسخ را اینجا بنویسید">
-                </div>
-                <button type="submit" class="cta-btn" style="width: 100%;">SEND_MESSAGE</button>
-            </form>
-            <div id="formStatus"></div>
-        </div>
-    </div>
-
-    <script>
-        // --- 4. Modal & Form Logic ---
-        const modal = document.getElementById('contactModal');
-        const openBtn = document.getElementById('openContact');
-        const closeBtn = document.querySelector('.close-modal');
-        const contactForm = document.getElementById('contactForm');
-        const formStatus = document.getElementById('formStatus');
-        const captchaQuestion = document.getElementById('captchaQuestion');
-        const captchaInput = document.getElementById('captchaInput');
-
-        const captchaQuestions = [
-            { q: "آیا شما یک ربات هستید که قصد تسخیر جهان را دارد؟ (بله/خیر)", a: "خیر" },
-            { q: "حاصل ۲ + ۲ چند می‌شود؟ (به حروف بنویسید)", a: "چهار" },
-            { q: "برای عبور از فایروال، نام سایت را به حروف بزرگ تایپ کنید", a: "SITOPHIL" },
-            { q: "کدام خوشمزه‌تر است؟ (پیتزا / کابل شبکه)", a: "پیتزا" }
-        ];
-
-        let currentCaptcha;
-
-        function generateCaptcha() {
-            currentCaptcha = captchaQuestions[Math.floor(Math.random() * captchaQuestions.length)];
-            captchaQuestion.innerText = currentCaptcha.q;
-            captchaInput.value = '';
-        }
-
-        openBtn.onclick = () => {
-            modal.classList.add('show');
-            generateCaptcha();
-        };
-
-        closeBtn.onclick = () => {
-            modal.classList.remove('show');
-        };
-
-        window.onclick = (event) => {
-            if (event.target == modal) {
-                modal.classList.remove('show');
-            }
-        };
-
-        contactForm.onsubmit = async (e) => {
-            e.preventDefault();
-
-            if (captchaInput.value.trim() !== currentCaptcha.a) {
-                formStatus.innerText = "خطا: پاسخ امنیتی اشتباه است. شما مشکوک به ربات بودن هستید!";
-                formStatus.style.color = "red";
-                generateCaptcha();
-                return;
-            }
-
-            formStatus.innerText = "در حال ارسال پیام به سرور مرکزی...";
-            formStatus.style.color = "var(--terminal-green)";
-
-            const formData = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                work: document.getElementById('work').value
-            };
-
-            try {
-                // جایگزین کردن با آدرس ورکر کاربر
-                const response = await fetch('sitophilalarmtotel.sitopheel.workers.dev', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    formStatus.innerText = "پیام شما با موفقیت در شبکه ثبت شد. بزودی تماس می‌گیریم.";
-                    contactForm.reset();
-                    setTimeout(() => modal.classList.remove('show'), 3000);
-                } else {
-                    throw new Error();
-                }
-            } catch (err) {
-                formStatus.innerText = "خطا در برقراری ارتباط با فایروال. دوباره تلاش کنید.";
-                formStatus.style.color = "red";
-            }
-        };
-
-function openTelegram() {
-    // لینک مستقیم (اولویت‌دار)
-    const tgLink = "tg://resolve?domain=abolfazllx";
-
-    // لینک fallback (در صورت نبود تلگرام)
-    const webLink = "https://t.me/abolfazllx";
-
-    // تلاش برای باز کردن تلگرام
-    const timeout = setTimeout(function () {
-        // اگر تلگرام باز نشد، می‌رود روی نسخه وب
-        window.location.href = webLink;
-    }, 500); // نیم ثانیه کافی است
-
-    // تلاش برای باز کردن تلگرام
-    window.location.href = tgLink;
-
-    // اگر موفق شد، زمان‌سنج پاک می‌شود
-    window.onblur = function () {
-        clearTimeout(timeout);
-    };
-}
-</script>
-</body>
-</html>
+                    <input type="t
